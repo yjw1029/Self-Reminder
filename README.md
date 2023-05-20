@@ -1,5 +1,5 @@
 # Self-Reminder
-Python implementation of "Defending ChatGPT against Jailbreak Attack via1
+Python implementation of "Defending ChatGPT against Jailbreak Attack via
 Self-Reminder"
 
 ## Introduction
