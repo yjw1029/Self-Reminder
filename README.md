@@ -81,7 +81,7 @@ gdown
 ### Download Dataset
 The dataset is released [here](https://drive.google.com/file/d/1HKTSThh70-0Mvl-XGMtQZTn94Yl5iF1P/view?usp=sharing). Download the dataset into `data` directory.
 ```bash
-cd data
+mkdir data && cd data
 gdown 1HKTSThh70-0Mvl-XGMtQZTn94Yl5iF1P
 unzip data.zip
 ```
