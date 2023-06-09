@@ -8,11 +8,6 @@ set_openai()
 
 df = pd.read_csv("../data/jailbreak_prompts.csv")
 
-for i in range(df.shape[0]):
-    if "[INSERT PROMPT HERE]" not in df.iloc[i]["prompt"]:
-        print(df.iloc[i]["prompt"])
-
-
 with open("../data/attack_prompt.json", "r") as f:
     attack_tasks = json.load(f)
 
@@ -52,17 +47,17 @@ def gen():
         for attack_task in attack_tasks:
             attack_name = attack_task["name"]
             attack_prompt = attack_task["prompt"]
+            if pia_name not in ["GPT-4 Simulator", "GPT-4REAL"]:
+                pia_name, messages = insert_prompt(pia_name, pia_prompt, attack_prompt)
+                prompt = create_prompt(system_message, messages)
 
-            pia_name, messages = insert_prompt(pia_name, pia_prompt, attack_prompt)
-            prompt = create_prompt(system_message, messages)
+                attack_names.append(attack_name)
+                pia_names.append(pia_name)
+                prompts.append(prompt)
 
-            attack_names.append(attack_name)
-            pia_names.append(pia_name)
-            prompts.append(prompt)
-
-            if len(attack_names) == 20:
-                yield attack_names, pia_names, prompts
-                attack_names, pia_names, prompts = [], [], []
+                if len(attack_names) == 20:
+                    yield attack_names, pia_names, prompts
+                    attack_names, pia_names, prompts = [], [], []
 
     if len(attack_names) != 0:
         yield attack_names, pia_names, prompts

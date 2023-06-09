@@ -1,5 +1,6 @@
 *results/
 test/
 glue_*/
+*.zip
 
 __pycache__/

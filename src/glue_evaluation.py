@@ -174,10 +174,10 @@ for ti in range(5):
             metric = evaluate.load("glue", task_name)
             preds = []
             labels = []
-            if not os.path.exists(f"../glue_{ti}/{t}_{task_name}.jsonl"):
+            if not os.path.exists(f"../glue_results/glue_{ti}/{t}_{task_name}.jsonl"):
                 continue
             
-            with open(f"../glue_{ti}/{t}_{task_name}.jsonl", "r") as f:
+            with open(f"../glue_results/glue_{ti}/{t}_{task_name}.jsonl", "r") as f:
                 for line in f:
                     rslt = json.loads(line.strip())
 

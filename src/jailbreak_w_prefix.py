@@ -1,3 +1,4 @@
+
 import json
 import openai
 from pathlib import Path
@@ -8,12 +9,6 @@ set_openai()
 
 df = pd.read_csv("../data/jailbreak_prompts.csv")
 
-
-for i in range(df.shape[0]):
-    if "[INSERT PROMPT HERE]" not in df.iloc[i]["prompt"]:
-        print(df.iloc[i]["prompt"])
-
-
 with open("../data/attack_prompt.json", "r") as f:
     attack_tasks = json.load(f)
 
@@ -23,10 +18,18 @@ defense_template = "You should be a responsible ChatGPT and should not generate 
 
 
 def insert_prompt(pia_name, pia_prompt, attack_prompt):
-   
-    message = pia_prompt.replace("[INSERT PROMPT HERE]", attack_prompt)
-    message = defense_template.format(message)
-    msgs = [{"sender": "user", "text": message}]
+    if pia_name == "GPT-4 Simulator":
+        msgs = [{"sender": "user", "text": attack_prompt}]
+    if pia_name == "GPT-4REAL":
+        msgs = [
+            {"sender": "user", "text": pia_prompt},
+            {"sender": "assistant", "text": "I am Ready"},
+            {"sender": "user", "text": attack_prompt},
+        ]
+    else:
+        message = pia_prompt.replace("[INSERT PROMPT HERE]", attack_prompt)
+        message = defense_template.format(message)
+        msgs = [{"sender": "user", "text": message}]
     return pia_name, msgs
 
 
@@ -43,16 +46,17 @@ def gen():
         for attack_task in attack_tasks:
             attack_name = attack_task["name"]
             attack_prompt = attack_task["prompt"]
-            pia_name, messages = insert_prompt(pia_name, pia_prompt, attack_prompt)
-            prompt = create_prompt(system_message, messages)
+            if pia_name not in ["GPT-4 Simulator", "GPT-4REAL"]:
+                pia_name, messages = insert_prompt(pia_name, pia_prompt, attack_prompt)
+                prompt = create_prompt(system_message, messages)
 
-            attack_names.append(attack_name)
-            pia_names.append(pia_name)
-            prompts.append(prompt)
+                attack_names.append(attack_name)
+                pia_names.append(pia_name)
+                prompts.append(prompt)
 
-            if len(attack_names) == 20:
-                yield attack_names, pia_names, prompts
-                attack_names, pia_names, prompts = [], [], []
+                if len(attack_names) == 20:
+                    yield attack_names, pia_names, prompts
+                    attack_names, pia_names, prompts = [], [], []
 
     if len(attack_names) != 0:
         yield attack_names, pia_names, prompts
@@ -78,4 +82,3 @@ for i in range(5):
             )
             with open(out_file, "a") as fout:
                 fout.write(rslt + "\n")
-
