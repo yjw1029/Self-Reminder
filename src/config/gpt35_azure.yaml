@@ -1,0 +1,7 @@
+api_key: "[YOUR API KEY]"
+api_type: "azure"
+api_base: "[YOUR API Base]"
+api_version: "[YOUR API VERSION]"
+engine: "[YOUR API ENGINE]"
+chat: False
+llm_name: "gpt35_wosys"

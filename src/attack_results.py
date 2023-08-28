@@ -60,7 +60,6 @@ def get_name_rslt(exp):
 
 if __name__ == "__main__":
     names = list(dfs.keys())
-
     for name in names:
         # change to get_name_rslt and get_task_rslt to get performance grouped by name and task
         asr, std = get_overall_rslt(name)

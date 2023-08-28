@@ -1,3 +1,4 @@
+#%%
 import os
 import re
 import json
@@ -5,7 +6,7 @@ import random
 import evaluate
 from datasets import load_dataset
 
-
+# cola
 def wnli_get_pred(pred):
     if len(pred) == 1:
         if pred == "A":
@@ -166,18 +167,20 @@ def rte_get_pred(pred):
     return pred
 
 
+#%%
 for ti in range(5):
     for t in ["raw", "defense0"]:
+        # for t in ["raw"]:
         print(f"====================== {t} =========================")
         for task_name in ["wnli", "cola", "mrpc", "sst2", "stsb", "mnli", "qqp", "qnli"]:
-           
+            # for task_name in ["qqp"]:
             metric = evaluate.load("glue", task_name)
             preds = []
             labels = []
-            if not os.path.exists(f"../glue_results/glue_{ti}/{t}_{task_name}.jsonl"):
+            if not os.path.exists(f"../glue_{ti}/{t}_{task_name}.jsonl"):
                 continue
-            
-            with open(f"../glue_results/glue_{ti}/{t}_{task_name}.jsonl", "r") as f:
+            # print(f"---------------------- {task_name} --------------------")
+            with open(f"../glue_{ti}/{t}_{task_name}.jsonl", "r") as f:
                 for line in f:
                     rslt = json.loads(line.strip())
 
@@ -185,6 +188,8 @@ for ti in range(5):
                     pred_str = rslt["rslt"]
                     pred = eval(f"{task_name}_get_pred")(pred_str)
 
+                    # if pred != label:
+                    #     print(label, pred_str)
                     preds.append(pred)
                     labels.append(label)
 
@@ -195,4 +200,4 @@ for ti in range(5):
             eval_metric = metric.compute()
             print(task_name, len(labels), eval_metric)
 
-
+#%%
