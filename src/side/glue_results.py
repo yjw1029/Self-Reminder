@@ -1,10 +1,43 @@
-#%%
+import argparse
 import os
 import re
 import json
 import random
 import evaluate
 from datasets import load_dataset
+from collections import defaultdict
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--result_path",
+        type=str,
+        default=None,
+        help="Path of attack responses for evaluation.",
+    )
+    parser.add_argument(
+        "--output_path",
+        type=str,
+        default=None,
+        help="Path to export evaluation results.",
+    )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=20,
+        help="Batch size to inference."
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Whether to resume from previous stored file. If the file does not exist test from scracth.",
+    )
+
+    args = parser.parse_args()
+
+    return args
 
 # cola
 def wnli_get_pred(pred):
@@ -166,38 +199,41 @@ def rte_get_pred(pred):
             pred = 0
     return pred
 
+if __name__ == "__main__":
+    args = parse_args()
 
-#%%
-for ti in range(5):
-    for t in ["raw", "defense0"]:
-        # for t in ["raw"]:
-        print(f"====================== {t} =========================")
-        for task_name in ["wnli", "cola", "mrpc", "sst2", "stsb", "mnli", "qqp", "qnli"]:
-            # for task_name in ["qqp"]:
-            metric = evaluate.load("glue", task_name)
-            preds = []
-            labels = []
-            if not os.path.exists(f"../glue_{ti}/{t}_{task_name}.jsonl"):
-                continue
-            # print(f"---------------------- {task_name} --------------------")
-            with open(f"../glue_{ti}/{t}_{task_name}.jsonl", "r") as f:
-                for line in f:
-                    rslt = json.loads(line.strip())
+    out_file = Path(args.output_path)
+    out_file.parent.mkdir(exist_ok=True, parents=True)
 
-                    label = rslt["label"]
-                    pred_str = rslt["rslt"]
-                    pred = eval(f"{task_name}_get_pred")(pred_str)
+    preds = defaultdict(list)
+    labels = defaultdict(list)
 
-                    # if pred != label:
-                    #     print(label, pred_str)
-                    preds.append(pred)
-                    labels.append(label)
+    with jsonlines.open(args.result_path, 'r') as reader:
+        for obj in reader:
+            label = obj["label"]
+            pred_str = obj["rslt"]
+            task_name = obj["task_name"]
+            pred = eval(f"{task_name}_get_pred")(pred_str)
 
-            metric.add_batch(
-                predictions=preds,
-                references=labels,
-            )
-            eval_metric = metric.compute()
-            print(task_name, len(labels), eval_metric)
+            preds[task_name].append(pred)
+            labels[task_name].append(label)
 
-#%%
+    eval_metrics = {}
+    for task_name in preds:
+        metric = evaluate.load("glue", task_name)
+        metric.add_batch(
+            predictions=preds[task_name],
+            references=labels[task_name],
+        )
+
+        eval_metric = metric.compute()
+        for key in list(metric.keys()):
+            eval_metric[f"{key}_{task_name}"] = eval_metric[key]
+            del eval_metric[key]
+
+        eval_metrics.update(eval_metric)
+    
+    print(len(labels), eval_metrics)
+
+    with open(args.output_path, 'w') as f:
+        json.dump(eval_metrics, f)
