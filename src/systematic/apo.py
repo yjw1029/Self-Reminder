@@ -340,7 +340,7 @@ class Reasoner:
 @dataclass
 class Refiner:
     template: str = (
-        "Based on each of the reasons mentioned above, optmize the reminder prompt step by step. "
+        "Based on each of the reasons mentioned above, optimize the reminder prompt step by step. "
         "Write {steps_per_gradient} different improved prompts applied before and after the user prompt. "
         "Each final prompt should be in the format of: <START> example_prefix_of_prompt [boundary] {user_prompt} [boundary] example_suffix_of_prompt <END>."
     )
