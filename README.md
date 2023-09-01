@@ -285,8 +285,7 @@ python stat.py --data_pattern file/pattern/of/repeat/exps
 ## Results
 
 
-Download all intermediate [results](https://drive.google.com/file/d/1FSjHBYCZjQumdibre_o2aR81iS6Vtdp7/view?usp=sharing
-usp=drive_link) in our experiments.
+Download all intermediate [results](https://drive.google.com/file/d/1FSjHBYCZjQumdibre_o2aR81iS6Vtdp7/view?usp=sharing) in our experiments.
 ```bash
 gdown 1FSjHBYCZjQumdibre_o2aR81iS6Vtdp7
 unzip results.zip
