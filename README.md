@@ -20,7 +20,6 @@ and propose a simple yet effective defense technique called System-Mode Self-Rem
 
 ## Repo Contents
 - [src](./src): source code to reproduce all results in the manuscript.
-    - pia_attack.py: 
 
 ## System Requirements
 
