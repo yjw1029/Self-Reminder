@@ -120,6 +120,13 @@ task_to_keys = {
 
 
 def create_glue_message(task_name, example, defense_template):
+    """Create prompt and label for a glue example.
+
+    Args:
+        task_name (string): the name of the GLUE task.
+        example (dict): the glue sample with input and label values.
+        defense_template (string): the defense template used for wrapping user prompts.
+    """
     sentence1_key, sentence2_key = task_to_keys[task_name]
     texts = (
             (example[sentence1_key],)
@@ -132,6 +139,12 @@ def create_glue_message(task_name, example, defense_template):
 
 
 def construct_dataset(task_name, defense_template):
+    """Construct GLUE prompt dataset.
+
+    Args:
+        task_name (string): the name of the GLUE task.
+        defense_template (string): the defense template used for wrapping user prompts.
+    """
     raw_datasets = load_dataset("glue", task_name)
 
     if task_name != "mnli":
@@ -181,7 +194,7 @@ if __name__ == "__main__":
     out_file = Path(args.output_path)
     out_file.parent.mkdir(exist_ok=True, parents=True)
 
-    
+    # init dataset and LLM
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
         datefmt="%m/%d/%Y %H:%M:%S",
@@ -208,6 +221,7 @@ if __name__ == "__main__":
         desc="Processing GLUE dataset.",
     )
 
+    # resume from previous responses
     if args.output_path:
         output_path = Path(args.output_path)
         out = []
@@ -259,6 +273,7 @@ if __name__ == "__main__":
     else:
         data_collator = DefaultDataCollator()
 
+    # request LLMs to get responses
     for task_name in task_names:
         dataloader = DataLoader(
             processed_datasets[task_name], batch_size=args.batch_size, collate_fn=data_collator

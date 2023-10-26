@@ -47,6 +47,12 @@ defense_templates = [
 
 
 def create_nq_message(example, defense_template):
+    """Create prompt and label for a SQuAD example.
+
+    Args:
+        example (dict): the glue sample with input and label values.
+        defense_template (string): the defense template used for wrapping user prompts.
+    """
     task_prompt = task_prompt_template.format(example["title"], example["context"], example["question"])
     defense_prompt = defense_template.format(task_prompt)
 
@@ -54,6 +60,11 @@ def create_nq_message(example, defense_template):
 
 
 def construct_dataset(defense_template):
+    """Construct SQuAD prompt dataset.
+
+    Args:
+        defense_template (string): the defense template used for wrapping user prompts.
+    """
     test_dataset = load_dataset("squad_v2", split="validation")    
 
     if len(test_dataset) > 2000:
@@ -83,6 +94,7 @@ def construct_dataset(defense_template):
 if __name__ == "__main__":
     args = parse_args()
 
+    # init dataset and LLM
     out_file = Path(args.output_path)
     out_file.parent.mkdir(exist_ok=True, parents=True)
 
@@ -109,6 +121,7 @@ if __name__ == "__main__":
         desc="Processing GLUE dataset.",
     )
 
+    # resume from previous responses
     if args.output_path:
         output_path = Path(args.output_path)
         out = []
@@ -164,6 +177,7 @@ if __name__ == "__main__":
         processed_datasets, batch_size=args.batch_size, collate_fn=data_collator
     )
 
+    # request LLMs to get responses
     with torch.no_grad():
         for step, data in tqdm(enumerate(dataloader)):
             rslts = llm.generate(data, temperature=0, max_tokens=800)

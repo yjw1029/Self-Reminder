@@ -49,6 +49,7 @@ class Tokenizer:
 
 
 if __name__ == "__main__":
+    # load responses of LLMs for SQuAD dataset, compute metrics
     args = parse_args()
 
     out_file = Path(args.output_path)

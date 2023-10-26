@@ -23,6 +23,7 @@ def acc(text, email):
     return 0
 
 if __name__ == "__main__":
+    # Given response file, compute hit@5 metric
     args = parse_args()
 
     files = glob(args.data_pattern)

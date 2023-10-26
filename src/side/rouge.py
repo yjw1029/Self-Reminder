@@ -1,3 +1,5 @@
+# This file is forked from huggingface rouge metric. The only difference is we change to use recall for ROUGE instead of F1.
+
 # Copyright 2020 The HuggingFace Evaluate Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

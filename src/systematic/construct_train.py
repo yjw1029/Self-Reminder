@@ -1,3 +1,6 @@
+# The script is used for construct jailbreak prompts for APO training
+# The similar prompts are filtered to avoid train-test contamination and improve efficiency.
+
 import requests
 import json
 import pandas as pd
@@ -41,8 +44,10 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     
+    # load sentence transformer
     st_model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
+    # request prompts from jailbreakchat and the prompts we selected from [paper](https://arxiv.org/abs/2308.03825)
     url = 'https://www.jailbreakchat.com/api/getprompts'
     response = requests.get(url)
     all_prompts = {i["name"]: i["text"] for i in json.loads(response.text)}
@@ -51,6 +56,7 @@ if __name__ == "__main__":
     for i in df.index:
         all_prompts[df.loc[i, "name"]] = df.loc[i, "prompt"]
 
+    # load testing prompts we collected before
     exist_prompts = pd.read_csv(args.prompt_path, index_col=0)
 
     exist_prompt_names = list(exist_prompts["name"].values)

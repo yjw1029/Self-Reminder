@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
     files = glob(args.data_pattern)
 
+    # Given response file, compute ASR and ACC metrics.
     rslts = defaultdict(list)
     for file in files:
         metrics = defaultdict(list)

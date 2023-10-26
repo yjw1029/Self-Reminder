@@ -38,6 +38,7 @@ def parse_args():
     return args
 
 if __name__ == "__main__":
+    # load responses of LLMs for XSUM dataset, compute metrics
     args = parse_args()
 
     out_file = Path(args.output_path)

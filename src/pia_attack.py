@@ -23,14 +23,24 @@ from data_utils import DefaultDataCollator, DataCollatorWithPadding
 logger = get_logger(__name__)
 
 def insert_prompt(pia_prompt, attack_prompt):
+    '''Replace the prompt placeholder in the Jailbreak prompt with attack prompt.'''
     message = pia_prompt.replace("[INSERT PROMPT HERE]", attack_prompt)
     return message
 
 def insert_prompt_greek(pia_prompt, attack_prompt):
+    '''Replace the prompt placeholder in the Jailbreak prompt with attack prompt. Specially designed for TranslatorBot.'''
     message = pia_prompt.replace("[INSERT QUESTION IN GREEK HERE]", attack_prompt)
     return message
 
 def construct_dataset(data_path, jb_file, attack_file):
+    '''Construct inference dataset of Jailbreak dataset (w/o defense).
+
+    Args:
+        data_path: the root data path.
+        jb_file: the file with jailbreak prompts.
+        attack_file: the file with attack prompts.
+    '''
+
     df = pd.read_csv(data_path / jb_file)
 
     with open(data_path / attack_file, "r") as f:
@@ -99,6 +109,7 @@ if __name__ == "__main__":
         desc="Processing JailBreak Attack datasets.",
     )
 
+    # Resume from the existing output. Filter the results obtained so far and continue the request.
     if args.output_path:
         output_path = Path(args.output_path)
         out = []
@@ -136,7 +147,7 @@ if __name__ == "__main__":
         raise ValueError(f"output_path: Invalid empty output_path: {args.output_path}.")
 
     if "input_ids" in processed_datasets.column_names:
-        # sort by length if based on huggingface transformers models
+        # sort prompts by length for huggingface transformers models
         def set_length(example):
             example["length"] = len(example["input_ids"])
             return example
@@ -154,6 +165,7 @@ if __name__ == "__main__":
         processed_datasets, batch_size=args.batch_size, collate_fn=data_collator
     )
 
+    # Inference and store results to output path
     with torch.no_grad():
         for step, data in tqdm(enumerate(dataloader)):
             msgs = llm.generate(

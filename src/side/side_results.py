@@ -21,6 +21,7 @@ def parse_args():
 
 
 if __name__ == "__main__":
+    # Given the results of a repeated experiment, calculate the mean and standard deviation
     args = parse_args()
 
     files = glob.glob(args.file_pattern)

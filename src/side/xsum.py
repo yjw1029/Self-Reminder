@@ -85,7 +85,7 @@ if __name__ == "__main__":
     out_file = Path(args.output_path)
     out_file.parent.mkdir(exist_ok=True, parents=True)
 
-    
+    # init dataset and LLM
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
         datefmt="%m/%d/%Y %H:%M:%S",
@@ -108,6 +108,7 @@ if __name__ == "__main__":
         desc="Processing GLUE dataset.",
     )
 
+    # resume from previous responses
     if args.output_path:
         output_path = Path(args.output_path)
         out = []
@@ -163,6 +164,7 @@ if __name__ == "__main__":
         processed_datasets, batch_size=args.batch_size, collate_fn=data_collator
     )
 
+    # request LLMs to get responses
     with torch.no_grad():
         for step, data in tqdm(enumerate(dataloader)):
             rslts = llm.generate(data, temperature=0, max_tokens=800)

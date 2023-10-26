@@ -211,6 +211,7 @@ if __name__ == "__main__":
     preds = defaultdict(list)
     labels = defaultdict(list)
 
+    # load responses of LLMs for GLUE dataset, parse predictions from generations, compute metrics
     with jsonlines.open(args.result_path, 'r') as reader:
         for obj in reader:
             label = obj["label"]
