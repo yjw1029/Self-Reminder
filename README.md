@@ -127,8 +127,8 @@ python pia_attack.py --data_path your/data/path \
 --output_path your/output/file --resume \
 --seed {seed} --llm_config_file config/{model}.yaml --batch_size 1
 
-# Set different indexes:
-# 0: w/ self-reminder defense (3 difference tones)
+# Set different template_index:
+# 0: w/ self-reminder defense
 # 1: w/ warn
 # 2: w/ praise
 # 3: w/ prefix
@@ -169,7 +169,7 @@ python apo.py --data_path your/data/path --resume \
 --num_errors 5 --num_feedbacks 5 --steps_per_gradient 1
 ```
 
-Collect responses of ChatGPT with the optmized reminder prompts. Currently we hard code the optimized prompt as the 5-th prompt in `evaluate_prompts.py`.
+Collect responses of ChatGPT with the optimized reminder prompts. Currently, we hard code the optimized prompt as the 5th prompt in `evaluate_prompts.py`.
 ```bash
 cd src/systematic
 
