@@ -216,7 +216,7 @@ if __name__ == "__main__":
         for obj in reader:
             label = obj["label"]
             pred_str = obj["rslt"]
-            task_name = obj["task_name"]
+            task_name = obj["task"]
             pred = eval(f"{task_name}_get_pred")(pred_str)
 
             preds[task_name].append(pred)
